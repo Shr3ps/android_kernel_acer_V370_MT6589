@@ -80,6 +80,10 @@ source "drivers/staging/sep/Kconfig"
 
 source "drivers/staging/iio/Kconfig"
 
+source "drivers/staging/snappy/Kconfig"
+
+source "lib/lz4/Kconfig"
+
 source "drivers/staging/zram/Kconfig"
 
 source "drivers/staging/zcache/Kconfig"

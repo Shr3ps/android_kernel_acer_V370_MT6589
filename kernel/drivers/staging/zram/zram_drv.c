@@ -29,7 +29,80 @@
 #include <linux/genhd.h>
 #include <linux/highmem.h>
 #include <linux/slab.h>
+
+/*
+#ifdef CONFIG_SNAPPY_COMPRESS && CONFIG_SNAPPY_DECOMPRESS
+#include "../snappy/csnappy.h"
+#define SNAPPY_MEM_COMPRESS      (16384 * sizeof(unsigned char *))
+#else
 #include <linux/lzo.h>
+#endif
+*/
+
+#if defined(CONFIG_ZRAM_LZO)
+#include <linux/lzo.h>
+#define WMSIZE		LZO1X_MEM_COMPRESS
+#define COMPRESS(s, sl, d, dl, wm)	\
+	lzo1x_1_compress(s, sl, d, dl, wm)
+#define DECOMPRESS(s, sl, d, dl)	\
+	lzo1x_decompress_safe(s, sl, d, dl)
+#elif defined(CONFIG_ZRAM_SNAPPY)
+#include "../snappy/csnappy.h" /* if built in drivers/staging */
+#define WMSIZE_ORDER	((PAGE_SHIFT > 14) ? (15) : (PAGE_SHIFT+1))
+#define WMSIZE		(1 << WMSIZE_ORDER)
+static int snappy_compress_(
+				const unsigned char *src,
+				size_t src_len,
+				unsigned char *dst,
+				size_t *dst_len,
+				void *workmem
+			   )
+{
+	const unsigned char *end = csnappy_compress_fragment(
+		src, (uint32_t)src_len, dst, workmem, WMSIZE_ORDER);
+	*dst_len = end - dst;
+	return 0;
+}
+static int snappy_decompress_(
+				const unsigned char *src,
+				size_t src_len,
+				unsigned char *dst,
+				size_t *dst_len
+			     )
+{
+	uint32_t dst_len_ = (uint32_t)*dst_len;
+	int ret = csnappy_decompress_noheader(src, src_len, dst, &dst_len_);
+	*dst_len = (size_t)dst_len_;
+	return ret;
+}
+
+#define COMPRESS(s, sl, d, dl, wm)	\
+	snappy_compress_(s, sl, d, dl, wm)
+#define DECOMPRESS(s, sl, d, dl)	\
+	snappy_decompress_(s, sl, d, dl)
+#elif defined(CONFIG_ZRAM_LZ4)
+#include <linux/lz4.h>
+#define WMSIZE		LZ4_MEM_COMPRESS
+static int lz4_decompress_(
+				const unsigned char *src,
+				size_t src_len,
+				unsigned char *dst,
+				size_t *dst_len
+			  )
+{
+	uint32_t dst_len_ = (uint32_t)*dst_len;
+	int ret = lz4_decompress_unknownoutputsize(src, src_len, dst, &dst_len_);
+	*dst_len = (size_t)dst_len_;
+	return ret;
+}
+#define COMPRESS(s, sl, d, dl, wm)	\
+	lz4_compress(s, sl, d, dl, wm)
+#define DECOMPRESS(s, sl, d, dl)	\
+	lz4_decompress_(s, sl, d, dl)
+#else
+#error either CONFIG_ZRAM_LZO, CONFIG_ZRAM_SNAPPY or CONFIG_ZRAM_LZ4 must be defined
+#endif
+
 #include <linux/string.h>
 #include <linux/vmalloc.h>
 
@@ -249,8 +322,19 @@ static int zram_bvec_read(struct zram *zram, struct bio_vec *bvec,
 
 	cmem = zs_map_object(zram->mem_pool, zram->table[index].handle);
 
+/*
+#ifdef CONFIG_SNAPPY_COMPRESS && CONFIG_SNAPPY_DECOMPRESS
+	ret = csnappy_decompress(cmem + sizeof(*zheader),
+				    zram->table[index].size,
+				    uncmem, &clen);
+#else
 	ret = lzo1x_decompress_safe(cmem + sizeof(*zheader),
 				    zram->table[index].size,
+				    uncmem, &clen);
+#endif
+*/
+
+ret = DECOMPRESS(cmem, zram->table[index].size,
 				    uncmem, &clen);
 
 	if (is_partial_io(bvec)) {
@@ -262,9 +346,14 @@ static int zram_bvec_read(struct zram *zram, struct bio_vec *bvec,
 	zs_unmap_object(zram->mem_pool, zram->table[index].handle);
 	kunmap_atomic(user_mem);
 
-	/* Should NEVER happen. Return bio error if it does. */
+	/* Should NEVER happen. Return bio error if it does.
+#ifdef CONFIG_SNAPPY_COMPRESS && CONFIG_SNAPPY_DECOMPRESS
+	if (unlikely(ret != CSNAPPY_E_OK)) {
+#else
 	if (unlikely(ret != LZO_E_OK)) {
-		pr_err("Decompression failed! err=%d, page=%u\n", ret, index);
+#endif
+	 */if (unlikely(ret != 0)) {
+	pr_err("Decompression failed! err=%d, page=%u\n", ret, index);
 		zram_stat64_inc(zram, &zram->stats.failed_reads);
 		return ret;
 	}
@@ -295,15 +384,30 @@ static int zram_read_before_write(struct zram *zram, char *mem, u32 index)
 		kunmap_atomic(cmem);
 		return 0;
 	}
-
+/*
+#ifdef CONFIG_SNAPPY_COMPRESS && CONFIG_SNAPPY_DECOMPRESS
+	ret = csnappy_decompress(cmem + sizeof(*zheader),
+				    zram->table[index].size,
+				    mem, &clen);
+#else
 	ret = lzo1x_decompress_safe(cmem + sizeof(*zheader),
 				    zram->table[index].size,
 				    mem, &clen);
+#endif*/
+
+	ret = DECOMPRESS(cmem, zram->table[index].size,
+				    mem, &clen);
+
 	zs_unmap_object(zram->mem_pool, zram->table[index].handle);
 
-	/* Should NEVER happen. Return bio error if it does. */
+	/* Should NEVER happen. Return bio error if it does. 
+#ifdef CONFIG_SNAPPY_COMPRESS && CONFIG_SNAPPY_DECOMPRESS
+	if (unlikely(ret != CSNAPPY_E_OK)) {
+#else
 	if (unlikely(ret != LZO_E_OK)) {
-		pr_err("Decompression failed! err=%d, page=%u\n", ret, index);
+#endif
+	*/if (unlikely(ret != 0)) {
+	pr_err("Decompression failed! err=%d, page=%u\n", ret, index);
 		zram_stat64_inc(zram, &zram->stats.failed_reads);
 		return ret;
 	}
@@ -368,16 +472,31 @@ static int zram_bvec_write(struct zram *zram, struct bio_vec *bvec, u32 index,
 		ret = 0;
 		goto out;
 	}
-
+/*
+#ifdef CONFIG_SNAPPY_COMPRESS && CONFIG_SNAPPY_DECOMPRESS
+	csnappy_compress(uncmem, PAGE_SIZE, src, &clen,
+			       zram->compress_workmem, CSNAPPY_WORKMEM_BYTES_POWER_OF_TWO);
+        ret = CSNAPPY_E_OK;
+#else
 	ret = lzo1x_1_compress(uncmem, PAGE_SIZE, src, &clen,
 			       zram->compress_workmem);
+#endif
+*/
+	COMPRESS(uncmem, PAGE_SIZE, src, &clen,
+			       zram->compress_workmem);
+	ret = 0;
 
 	kunmap_atomic(user_mem);
 	if (is_partial_io(bvec))
 			kfree(uncmem);
-
+/*
+#ifdef CONFIG_SNAPPY_COMPRESS && CONFIG_SNAPPY_DECOMPRESS
+	if (unlikely(ret != CSNAPPY_E_OK)) {
+#else
 	if (unlikely(ret != LZO_E_OK)) {
-		pr_err("Compression failed! err=%d\n", ret);
+#endif
+	*/if (unlikely(ret != 0)) {
+	pr_err("Compression failed! err=%d\n", ret);
 		goto out;
 	}
 
@@ -634,8 +753,15 @@ int zram_init_device(struct zram *zram)
 	}
 
 	zram_set_disksize(zram, totalram_pages << PAGE_SHIFT);
-
+/*
+#ifdef CONFIG_SNAPPY_COMPRESS && CONFIG_SNAPPY_DECOMPRESS
+	zram->compress_workmem = kzalloc(SNAPPY_MEM_COMPRESS, GFP_KERNEL);
+#else
 	zram->compress_workmem = kzalloc(LZO1X_MEM_COMPRESS, GFP_KERNEL);
+#endif
+*/
+	zram->compress_workmem = kzalloc(WMSIZE, GFP_KERNEL);
+
 	if (!zram->compress_workmem) {
 		pr_err("Error allocating compressor working memory!\n");
 		ret = -ENOMEM;

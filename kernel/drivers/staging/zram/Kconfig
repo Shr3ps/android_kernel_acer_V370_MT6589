@@ -1,11 +1,7 @@
 config ZRAM
 	tristate "Compressed RAM block device support"
-	# X86 dependency is because zsmalloc uses non-portable pte/tlb
-	# functions
-	depends on BLOCK && SYSFS && X86
+	depends on BLOCK && SYSFS
 	select ZSMALLOC
-	select LZO_COMPRESS
-	select LZO_DECOMPRESS
 	default n
 	help
 	  Creates virtual block devices called /dev/zramX (X = 0, 1, ...).
@@ -26,3 +22,36 @@ config ZRAM_DEBUG
 	help
 	  This option adds additional debugging code to the compressed
 	  RAM block device driver.
+
+config ZRAM_FOR_ANDROID
+	bool "Optimize zram behavior for android"
+	depends on ZRAM && ANDROID
+	default n
+	help
+	  This option enables modified zram behavior optimized for android
+
+choice ZRAM_COMPRESS
+	prompt "compression method"
+	depends on ZRAM
+	default ZRAM_LZO
+	help
+	  Select the compression method used by zram.
+	  LZO is the default. Snappy compresses a bit worse (around ~2%) but
+	  much (~2x) faster, at least on x86-64, LZ4 is said to be the fastest
+	  for now.
+
+config ZRAM_LZO
+	bool "LZO compression"
+	select LZO_COMPRESS
+	select LZO_DECOMPRESS
+
+config ZRAM_SNAPPY
+	bool "Snappy compression"
+	select SNAPPY_COMPRESS
+	select SNAPPY_DECOMPRESS
+
+config ZRAM_LZ4
+	bool "LZ4 compression"
+	select LZ4_COMPRESS
+	select LZ4_DECOMPRESS
+endchoice
