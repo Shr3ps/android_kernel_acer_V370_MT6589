@@ -49,6 +49,7 @@
 ** See the License for the specific language governing permissions and
 ** limitations under the License.
 */
+#define LOG_TAG "flash_tuning_custom_cct.cpp"
 
 #include "camera_custom_types.h"
 #include "string.h"
@@ -56,14 +57,18 @@
 #else
 #include "camera_custom_nvram.h"
 #endif
+#include <cutils/xlog.h>
 #include "flash_feature.h"
 #include "flash_param.h"
 #include "flash_tuning_custom.h"
-
+#include <kd_camera_feature.h>
+#include <cutils/xlog.h>
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-int getDefaultStrobeNVRam(int sensorType, void* data, int* ret_size)
+int getDefaultStrobeNVRam_sub(void* data, int* ret_size);
+
+int getDefaultStrobeNVRam_main(void* data, int* ret_size)
 {
 	//static NVRAM_CAMERA_STROBE_STRUCT strobeNVRam;
 	NVRAM_CAMERA_STROBE_STRUCT* p;
@@ -139,4 +144,20 @@ int getDefaultStrobeNVRam(int sensorType, void* data, int* ret_size)
 
 	*ret_size = sizeof(NVRAM_CAMERA_STROBE_STRUCT);
 	return 0;
+}
+
+
+int getDefaultStrobeNVRam(int sensorType, void* data, int* ret_size)
+{
+
+	if(sensorType==(int)DUAL_CAMERA_SUB_SENSOR)
+	{
+		XLOGD("getDefaultStrobeNVRam ln=%d sensorId=%d",__LINE__, sensorType);
+		return getDefaultStrobeNVRam_sub(data, ret_size);
+	}
+	else //DUAL_CAMERA_MAIN_SENSOR
+	{
+		XLOGD("getDefaultStrobeNVRam ln=%d sensorId=%d",__LINE__, sensorType);
+		return getDefaultStrobeNVRam_main(data, ret_size);
+	}
 }

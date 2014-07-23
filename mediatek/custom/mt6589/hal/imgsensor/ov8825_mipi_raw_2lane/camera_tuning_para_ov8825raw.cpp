@@ -149,22 +149,22 @@ const NVRAM_CAMERA_3A_STRUCT CAMERA_3A_NVRAM_DEFAULT_VALUE =
     {
         // rDevicesInfo
         {
-            1144,   // u4MinGain, 1024 base =  1x
-            10240,  // u4MaxGain, 16x
-            100,     // u4MiniISOGain, ISOxx
-            128,    // u4GainStepUnit, 1x/8
-            26355,     // u4PreExpUnit
-            30,     // u4PreMaxFrameRate
-            17763,     // u4VideoExpUnit
-            30,     // u4VideoMaxFrameRate
-            512,   // u4Video2PreRatio, 1024 base = 1x
-            17763,     // u4CapExpUnit
-            23,     // u4CapMaxFrameRate
-            512,   // u4Cap2PreRatio, 1024 base = 1x
-            24,      // u4LensFno, Fno = 2.8
-            350     // u4FocusLength_100x
-         },
-         // rHistConfig
+            1160,    // u4MinGain, 1024 base = 1x
+            10240,    // u4MaxGain, 16x
+            100,    // u4MiniISOGain, ISOxx  
+            128,    // u4GainStepUnit, 1x/8 
+            26,    // u4PreExpUnit 
+            30,    // u4PreMaxFrameRate
+            19,    // u4VideoExpUnit  
+            30,    // u4VideoMaxFrameRate 
+            512,    // u4Video2PreRatio, 1024 base = 1x 
+            28,    // u4CapExpUnit 
+            15,    // u4CapMaxFrameRate
+            512,    // u4Cap2PreRatio, 1024 base = 1x
+            24,    // u4LensFno, Fno = 2.8
+            350    // u4FocusLength_100x
+        },
+        // rHistConfig
         {
             2,   // u4HistHighThres
             40,  // u4HistLowThres
@@ -187,18 +187,17 @@ const NVRAM_CAMERA_3A_STRUCT CAMERA_3A_NVRAM_DEFAULT_VALUE =
             FALSE,    // bEnableStrobeThres
             47,    // u4AETarget
             47,                // u4StrobeAETarget
-
             50,                // u4InitIndex
             4,                 // u4BackLightWeight
             32,                // u4HistStretchWeight
             4,                 // u4AntiOverExpWeight
-            2,                 // u4BlackLightStrengthIndex
-            2,                 // u4HistStretchStrengthIndex
+            0,                 // u4BlackLightStrengthIndex
+            0,    						// u4HistStretchStrengthIndex
             2,                 // u4AntiOverExpStrengthIndex
             2,                 // u4TimeLPFStrengthIndex
             {1, 3, 5, 7, 8}, // u4LPFConvergeTable[AE_CCT_STRENGTH_NUM]
             90,                // u4InDoorEV = 9.0, 10 base
-            -10,               // i4BVOffset delta BV = -2.3
+            -6,    // i4BVOffset delta BV = value/10 
             64,                 // u4PreviewFlareOffset
             64,                 // u4CaptureFlareOffset
             3,                 // u4CaptureFlareThres
@@ -211,7 +210,7 @@ const NVRAM_CAMERA_3A_STRUCT CAMERA_3A_NVRAM_DEFAULT_VALUE =
             160,                 // u4VideoMaxFlareThres // 12 bit
             0,                 // u4VideoMinFlareThres            
             18,                // u4FlatnessThres              // 10 base for flatness condition.
-            75                 // u4FlatnessStrength
+            65    // u4FlatnessStrength
          }
     },
 

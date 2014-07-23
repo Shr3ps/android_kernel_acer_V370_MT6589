@@ -170,6 +170,7 @@ typedef struct
     MINT32      i4IsMonitorFV;
     MINT32      i4AFBestPos;
     MINT32      i4AFPos;    
+    MINT32      i4FDDetect;  
     MINT64      i8AFValue;
     AF_CONFIG_T sAFStatConfig;
     AF_AREA_T   sAFArea;

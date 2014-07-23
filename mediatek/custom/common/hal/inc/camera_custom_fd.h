@@ -47,6 +47,7 @@ typedef struct
     unsigned int FDRefresh;
     unsigned int SDThreshold;
     unsigned int SDMainFaceMust;
+    unsigned int SDMaxSmileNum;	//ALPS00943937
     unsigned int GSensor;   
 }FD_Customize_PARA;
 

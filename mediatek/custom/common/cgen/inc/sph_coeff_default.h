@@ -158,7 +158,7 @@
 
 #define DEFAULT_SPEECH_BT_EARPHONE_MODE_PARA \
      0,   253, 10756,    31, 53255,  31,   400,     0, \
-    80,  4325,    611,     0, 53256 | BT_COMP_FILTER,  0,     0,     BT_SYNC_DELAY
+    80,  4325,    611,     0, 20448,  0,     0,     BT_SYNC_DELAY
 
 #define DEFAULT_SPEECH_LOUDSPK_MODE_PARA \
     96,   224,  5256,    31, 57351, 24607,   400,   32, \

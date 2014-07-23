@@ -715,6 +715,7 @@ void Auddrv_UL_Interrupt_Handler(void)  // irq2 ISR handler
 void Auddrv_DL_Interrupt_Handler(void)  // irq1 ISR handler
 {
     unsigned long flags;
+    bool overflowflag = false;
     kal_int32 Afe_consumed_bytes = 0;
     kal_int32 HW_memory_index =0;
     kal_int32 HW_Cur_ReadIdx = 0;
@@ -751,7 +752,7 @@ void Auddrv_DL_Interrupt_Handler(void)  // irq1 ISR handler
          Afe_Block->u4DMAReadIdx,Afe_Block->u4WriteIdx,Afe_Block->u4DataRemained,Afe_consumed_bytes,HW_memory_index);
          */
 
-     if(Afe_Block->u4DataRemained < Afe_consumed_bytes || Afe_Block->u4DataRemained == 0 || AudIrqReset)
+     if(Afe_Block->u4DataRemained < Afe_consumed_bytes || Afe_Block->u4DataRemained <= 0 ||Afe_Block->u4DataRemained  > Afe_Block->u4BufferSize || AudIrqReset)
      {
          // buffer underflow --> clear  whole buffer
          memset(Afe_Block->pucVirtBufAddr,0,Afe_Block->u4BufferSize);
@@ -763,6 +764,7 @@ void Auddrv_DL_Interrupt_Handler(void)  // irq1 ISR handler
          PRINTK_AUDDRV("-DL_Handling underflow ReadIdx:%x WriteIdx:%x, DataRemained:%x, Afe_consumed_bytes %x \n",
              Afe_Block->u4DMAReadIdx,Afe_Block->u4WriteIdx,Afe_Block->u4DataRemained,Afe_consumed_bytes);
          AudIrqReset = false;
+         overflowflag = true;
      }
      else
      {
@@ -781,7 +783,10 @@ void Auddrv_DL_Interrupt_Handler(void)  // irq1 ISR handler
     DL1_wait_queue_flag =1;
     wake_up_interruptible(&DL1_Wait_Queue);
     spin_unlock_irqrestore(&auddrv_irqstatus_lock, flags);
-
+    if(overflowflag == true)
+    {
+        kill_fasync(&AudDrv_async, SIGIO, POLL_IN); // notify the user space
+    }
 }
 
 static unsigned long long Irq_time_t1 =0, Irq_time_t2 =0;
@@ -2548,10 +2553,17 @@ static ssize_t AudDrv_write(struct file *fp, const char __user *data, size_t cou
        spin_lock_irqsave(&auddrv_DLCtl_lock, flags);
        copy_size = Afe_Block->u4BufferSize - Afe_Block->u4DataRemained;  //  free space of the buffer
        spin_unlock_irqrestore(&auddrv_DLCtl_lock, flags);
-       if(count <= (kal_uint32) copy_size)
+       if(count <=  copy_size )
        {
-           copy_size = count;
-           //PRINTK_AUDDRV("AudDrv_write copy_size:%x \n", copy_size);	// (free  space of buffer)
+           if(copy_size < 0)
+           {
+               copy_size = 0;
+               msleep(DL1_Interrupt_Interval>>1);
+           }
+           else
+           {
+               copy_size = count;
+           }
        }
 
        if(copy_size != 0)

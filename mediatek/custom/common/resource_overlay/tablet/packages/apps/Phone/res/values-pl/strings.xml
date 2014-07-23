@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  Copyright (C) 2007 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="no_sip_account_found">W urządzeniu nie są dostępne żadne konta umożliwiające wykonywanie połączeń internetowych. Dodać konto teraz?</string>  
+    <string name="ota_progress">Trwa programowanie urządzenia, czekaj...</string>  
+    <string name="ota_skip_activation_dialog_message">Jeśli pominiesz aktywację, nie będzie możliwe wykonywanie połączeń ani łączenie z komórkowymi sieciami danych (będzie jednak możliwe łączenie z sieciami Wi-Fi). Do czasu aktywacji urządzenia po każdym jego włączeniu wyświetlany będzie monit o aktywację.</string>  
+    <string name="ota_successful">Urządzenie nie zostało aktywowane. \nMoże okazać się konieczne znalezienie obszaru z lepszym zasięgiem (bliżej okna, na zewnątrz budynku). \n\nSpróbuj ponownie lub zadzwoń do działu obsługi klienta, aby dowiedzieć się, jakie są inne dostępne opcje.</string>  
+    <string name="puk_unlocked">Karta SIM została odblokowana. Trwa odblokowywanie urządzenia\u2026</string>  
+</resources>

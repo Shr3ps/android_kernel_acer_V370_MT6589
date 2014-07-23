@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?><!--
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
 /* //device/apps/common/assets/res/any/strings.xml
 **
 ** Copyright 2006, The Android Open Source Project
@@ -15,8 +17,9 @@
 ** See the License for the specific language governing permissions and
 ** limitations under the License.
 */
---><resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="aerr_application_lowmem">وحدة تخزين الجهاز اللوحي ممتلئة وقد توقف التطبيق. يرجى تفريغ مساحة وإعادة المحاولة.</string>  
-    <string name="aerr_process_lowmem">وحدة تخزين الجهاز اللوحي ممتلئة وقد توقف التطبيق. يرجى تفريغ مساحة وإعادة المحاولة.</string> 
-   <string name="criticallowmessage">ذاكرة التخزين الخاصة بالجهاز ممتلئة؛ يُرجى حذف الملفات عديمة الفائدة وإلا قد يتم الخروج من التطبيق بصورة فجائية</string>  
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">  
+    <string name="aerr_application_lowmem">"وحدة تخزين الجهاز اللوحي ممتلئة وقد توقف التطبيق عن العمل. يرجى تفريغ مساحة وإعادة المحاولة مجدداً."</string>  
+    <string name="aerr_process_lowmem">"وحدة تخزين الجهاز اللوحي ممتلئة وقد توقف التطبيق عن العمل. يرجى تفريغ مساحة وإعادة المحاولة مجدداً."</string>  
+    <string name="criticallowmessage">"وحدة تخزين الجهاز ممتلئة؛ يُرجى حذف الملفات عديمة الفائدة وإلا قد يتم الخروج من التطبيق بصورة فجائية"</string> 
 </resources>

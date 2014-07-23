@@ -579,6 +579,9 @@ void DpEngine_COLORonInit(void)
 
         //enable interrupt
         DISP_REG_SET((DISPSYS_COLOR_BASE + 0xf04), 0x00000007);
+        
+        //Set 10bit->8bit Rounding 
+        DISP_REG_SET((DISPSYS_COLOR_BASE + 0xf0c), 0x333);
 
         //init color matrix
         DISP_REG_SET((DISPSYS_COLOR_BASE + 0xf64), 306  );

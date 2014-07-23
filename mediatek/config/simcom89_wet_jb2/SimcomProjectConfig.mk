@@ -133,3 +133,5 @@ MMI_CALL_VOICE_TELEPHONE_VOLUME_LIMITED = yes
 #插入耳机振动
 #add by NavyGuo 20130325
 MMI_VIB_HEADSET_IN = yes
+#Acer data roaming option
+MMI_ROAMING_OPTION = no

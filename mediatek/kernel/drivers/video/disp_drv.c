@@ -5,7 +5,7 @@ extern s32 mt_set_gpio_out(u32 pin, u32 output);
 extern s32 mt_set_gpio_mode(u32 pin, u32 mode);
 extern s32 mt_set_gpio_dir(u32 pin, u32 dir);
 extern s32 mt_set_gpio_pull_enable(u32 pin, u32 enable);
-
+ 
 #else
 #include <linux/delay.h>
 #include <linux/fb.h>
@@ -937,6 +937,11 @@ DISP_STATUS DISP_PowerEnable(BOOL enable)
     if (!is_ipoh_bootup)
         needStartEngine = true;
 
+    if (enable && lcm_drv && lcm_drv->resume_power)
+    {
+		lcm_drv->resume_power();
+    }
+
 	ret = (disp_drv->enable_power) ?
 		(disp_drv->enable_power(enable)) :
 		DISP_STATUS_NOT_IMPLEMENTED;
@@ -944,7 +949,11 @@ DISP_STATUS DISP_PowerEnable(BOOL enable)
     if (enable) {
         DAL_OnDispPowerOn();
     }
-	
+    else if (lcm_drv && lcm_drv->suspend_power)
+    {
+        lcm_drv->suspend_power();
+    }
+
 	up(&sem_update_screen);
 
 
@@ -1619,12 +1628,14 @@ static int _DISP_CaptureOvlKThread(void *data)
 	M4U_PORT_STRUCT portStruct;
 	unsigned int init = 0;
 	unsigned int enabled = 0;
-       MMP_MetaDataBitmap_t Bitmap;
+	int wait_ret = 0;
+    MMP_MetaDataBitmap_t Bitmap;
     buf_size = DISP_GetScreenWidth() * DISP_GetScreenHeight() * 4;
 
     while(1)
     {
-        wait_event_interruptible(reg_update_wq, gWakeupCaptureOvlThread);
+        wait_ret = wait_event_interruptible(reg_update_wq, gWakeupCaptureOvlThread);
+        DISP_LOG("[WaitQ] wait_event_interruptible() ret = %d, %d\n", wait_ret, __LINE__);
         gWakeupCaptureOvlThread = 0;
         if (init == 0)
         {
@@ -1875,7 +1886,7 @@ static int _DISP_ConfigUpdateKThread(void *data)
                         PanDispSettingPending = 0;
                     }
                     atomic_set(&OverlaySettingApplied, 1);
-                    wake_up_interruptible(&reg_update_wq);
+                    wake_up(&reg_update_wq);
                 }
                 MMProfileLog(MTKFB_MMP_Events.ConfigOVL, MMProfileFlagEnd);
 
@@ -2001,7 +2012,7 @@ static void _DISP_RegUpdateCallback(void* pParam)
         atomic_set(&OverlaySettingApplied, 1);
     }
     gWakeupCaptureOvlThread = 1;
-    wake_up_interruptible(&reg_update_wq);
+    wake_up(&reg_update_wq);
 }
 
 static void _DISP_TargetLineCallback(void* pParam)
@@ -2462,7 +2473,7 @@ UINT32 DISP_GetOutputBPPforDithering(void)
 
 DISP_STATUS DISP_Config_Overlay_to_Memory(unsigned int mva, int enable)
 {
-//	int ret = 0;
+	int wait_ret = 0;
 
 //	struct disp_path_config_mem_out_struct mem_out = {0};
 
@@ -2500,7 +2511,8 @@ DISP_STATUS DISP_Config_Overlay_to_Memory(unsigned int mva, int enable)
 //#endif
 
 		// Wait for reg update.
-		wait_event_interruptible(reg_update_wq, !MemOutConfig.dirty);
+		wait_ret = wait_event_interruptible(reg_update_wq, !MemOutConfig.dirty);
+		DISP_LOG("[WaitQ] wait_event_interruptible() ret = %d, %d\n", wait_ret, __LINE__);
 	}
 
 	return DSI_STATUS_OK;
@@ -2551,12 +2563,70 @@ DISP_STATUS DISP_Config_Wfd_Overlay_to_Memory(unsigned int mva, int enable)
 	return DSI_STATUS_OK;
 }	
 
+DISP_STATUS HDMI_Config_Overlay_to_Memory(unsigned int mva, int enable, unsigned int moutFormat)
+{
+    //  int ret = 0;
+
+    //  struct disp_path_config_mem_out_struct mem_out = {0};
+	MemOutConfig.outFormat = moutFormat;
+    if (enable)
+    {
+
+        MemOutConfig.enable = 1;
+        MemOutConfig.dstAddr = mva;
+        MemOutConfig.srcROI.x = 0;
+        MemOutConfig.srcROI.y = 0;
+        MemOutConfig.srcROI.height = DISP_GetScreenHeight();
+        MemOutConfig.srcROI.width = DISP_GetScreenWidth();
+
+#if !defined(MTK_WFD_SUPPORT) && !defined(MTK_HDMI_SUPPORT)
+        mutex_lock(&MemOutSettingMutex);
+        MemOutConfig.dirty = 1;
+        mutex_unlock(&MemOutSettingMutex);
+#endif
+    }
+    else
+    {
+        MemOutConfig.enable = 0;
+        MemOutConfig.dstAddr = mva;
+        MemOutConfig.srcROI.x = 0;
+        MemOutConfig.srcROI.y = 0;
+        MemOutConfig.srcROI.height = DISP_GetScreenHeight();
+        MemOutConfig.srcROI.width = DISP_GetScreenWidth();
+
+        //#if !defined(MTK_WFD_SUPPORT) && !defined(MTK_HDMI_SUPPORT)
+        mutex_lock(&MemOutSettingMutex);
+        MemOutConfig.dirty = 1;
+        mutex_unlock(&MemOutSettingMutex);
+        //#endif
+
+        // Wait for reg update.
+        wait_event_interruptible(reg_update_wq, !MemOutConfig.dirty);
+    }
+
+	printk("HDMI_Config_Overlay_to_Memory done: %d\n",enable);
+    return DSI_STATUS_OK;
+}
+
 DISP_STATUS DISP_Capture_Framebuffer( unsigned int pvbuf, unsigned int bpp, unsigned int is_early_suspended )
 {
     unsigned int mva;
     unsigned int ret = 0;
+    int wait_ret = 0;
     M4U_PORT_STRUCT portStruct;
 	DISP_FUNC();
+	int i;
+    for (i=0; i<OVL_LAYER_NUM; i++)
+    {
+        if (cached_layer_config[i].layer_en && cached_layer_config[i].security)
+            break;
+    }
+    if (i < OVL_LAYER_NUM)
+    {
+        // There is security layer.
+        memset(pvbuf, 0, DISP_GetScreenHeight()*DISP_GetScreenWidth()*bpp/8);
+        return DISP_STATUS_OK;
+    }
 	disp_drv_init_context();
 	disp_module_clock_on(DISP_MODULE_WDMA1, "Screen Capture");
 
@@ -2645,7 +2715,8 @@ DISP_STATUS DISP_Capture_Framebuffer( unsigned int pvbuf, unsigned int bpp, unsi
         MemOutConfig.dirty = 1;
         mutex_unlock(&MemOutSettingMutex);
         // Wait for reg update.
-        wait_event_interruptible(reg_update_wq, !MemOutConfig.dirty);
+        wait_ret = wait_event_interruptible(reg_update_wq, !MemOutConfig.dirty);
+        DISP_LOG("[WaitQ] wait_event_interruptible() ret = %d, %d\n", wait_ret, __LINE__);
         MMProfileLogEx(MTKFB_MMP_Events.CaptureFramebuffer, MMProfileFlagPulse, 4, 0);
     }
 

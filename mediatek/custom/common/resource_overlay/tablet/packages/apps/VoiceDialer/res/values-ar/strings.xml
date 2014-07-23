@@ -15,5 +15,5 @@
      limitations under the License.
 -->
 <resources> 
-    <string name="recognition_error">أعد تشغيل الكمبيوتر اللوحي ثم حاول مرة أخرى.</string> 
+    <string name="recognition_error">"أعد تشغيل الجهاز اللوحي ثم حاول مرة أخرى."</string> 
 </resources>

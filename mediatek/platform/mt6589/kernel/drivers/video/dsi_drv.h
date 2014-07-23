@@ -310,6 +310,7 @@ void DSI_handle_esd_recovery(void);
 void DSI_set_int_TE(bool enable, unsigned int period);
 bool DSI_handle_int_TE(void);
 void DSI_set_noncont_clk(bool enable, unsigned int period);
+void DSI_Detect_glitch_enable(bool enable);
 void DSI_handle_noncont_clk(void);
 void DSI_set_cmdq_V3(LCM_setting_table_V3 *para_tbl, unsigned int size, unsigned char force_update);
 void DSI_set_cmdq_V2(unsigned cmd, unsigned char count, unsigned char *para_list, unsigned char force_update);

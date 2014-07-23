@@ -555,8 +555,8 @@ static void lcm_update(unsigned int x, unsigned int y,
 	data_array[2]= (y1_LSB);
 	dsi_set_cmdq(&data_array, 3, 1);
 	
-	data_array[0] = 0x00290508;
-	dsi_set_cmdq(&data_array, 1, 1);
+	//data_array[0] = 0x00290508;
+	//dsi_set_cmdq(&data_array, 1, 1);
 
 	data_array[0]= 0x002c3909;
 	dsi_set_cmdq(data_array, 1, 0);

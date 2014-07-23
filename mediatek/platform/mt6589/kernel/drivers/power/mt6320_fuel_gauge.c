@@ -2389,7 +2389,7 @@ void fgauge_Normal_Mode_Work(void)
         }
         #endif        
 	#if defined(ACER_C11)
-        gFG_15_vlot = 3650;
+        gFG_15_vlot = 3700;
 	#endif
         //double check
         if(gFG_current_auto_detect_R_fg_total <= CURRENT_DETECT_R_FG)

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <!-- Copyright (C) 2007 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,8 +14,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" xmlns:tools="http://schemas.android.com/tools">
-    <string name="screensaver_settings_disabled_prompt">للتحكم فيما يحدث عندما يكون الكمبيوتر اللوحي في وضع الإرساء و/أو الخمول, قم بتشغيل وضع حُلم اليقظة.</string>
-    <string name="activity_not_found">التطبيق غير مثبت على الجهاز.</string>  
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" xmlns:tools="http://schemas.android.com/tools">  
+    <string name="screensaver_settings_disabled_prompt">"للتحكم فيما يحدث عندما يكون جهازك اللوحي في وضع الإرساء و/أو السكون، قم بتشغيل الوضع Daydream."</string>  
+    <string name="activity_not_found">"التطبيق غير منصب على الجهاز."</string> 
 </resources>

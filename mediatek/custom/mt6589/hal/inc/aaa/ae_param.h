@@ -196,6 +196,16 @@ typedef struct
     MUINT16 AE_HIST[4*AE_HISTOGRAM_BIN]; // 4 histogram x 128 bin (256 bytes)
 } AWBAE_STAT_T;
 
+/*******************************************************************************
+* Dynamic Frame Rate for Video
+******************************************************************************/
+typedef struct VdoDynamicFrameRate_S
+{
+    MBOOL   isEnableDFps;
+    MUINT32 EVThresNormal;
+    MUINT32 EVThresNight;
+} VdoDynamicFrameRate_T;
+
 //////////////////////////////////////////
 //
 //  AE Parameter structure
@@ -221,6 +231,7 @@ struct AE_PARAMETER
     strAEMOVE *pAEVideoMovingTable;    
     strAEMOVE *pAEFaceMovingTable;    
     strAELimiterTable strAELimiterData;
+    VdoDynamicFrameRate_T strVdoDFps;
 };
 
 typedef struct AE_PARAMETER AE_PARAM_T;

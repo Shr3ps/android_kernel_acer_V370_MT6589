@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!-- 
 /* //device/apps/common/assets/res/any/strings.xml
 **
@@ -17,9 +18,9 @@
 ** limitations under the License.
 */
  -->
-
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="permdesc_disableKeyguard">تتيح للتطبيق تعطيل خاصية قفل المفاتيح وغير ذلك من خصائص حماية كلمة المرور ذات الصلة. فعلى سبيل المثال يعطل الجهاز اللوحي خاصية قفل المفاتيح عند تلقي مكالمة هاتفية واردة ومن ثم يعيد تمكينها فور انتهاء المكالمة.</string> 
-    <string name="wifi_p2p_frequency_conflict_message">سيتم قطع اتصال الكمبيوتر اللوحي من شبكة Wi-Fi بشكل مؤقت أثناء اتصاله بجهاز <xliff:g id="device_name">%1$s</xliff:g></string>
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">  
+    <string name="permdesc_disableKeyguard">"تتيح للتطبيق إمكانية إيقاف خاصية قفل المفاتيح وغير ذلك من خصائص حماية كلمة المرور ذات الصلة. فعلى سبيل المثال يعطل الجهاز اللوحي خاصية قفل المفاتيح عند تلقي مكالمة هاتفية واردة ومن ثم يعيد تمكينها فور انتهاء المكالمة."</string>  
+    <string name="wifi_p2p_frequency_conflict_message">"سيتم قطع اتصال الجهاز اللوحي من شبكة Wi-Fi بشكل مؤقت أثناء اتصاله بجهاز 
+        <xliff:g id="device_name">%1$s</xliff:g>"
+    </string> 
 </resources>

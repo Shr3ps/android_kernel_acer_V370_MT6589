@@ -441,14 +441,14 @@ static void GC2035_Sensor_Init(void)
 	GC2035_write_cmos_sensor(0xfa , 0x00);
 	GC2035_write_cmos_sensor(0xf6 , 0x00);
 	GC2035_write_cmos_sensor(0xf7 , 0x15); //pll enable
-	GC2035_write_cmos_sensor(0xf8 , 0x85); //0x87 0319
+	GC2035_write_cmos_sensor(0xf8 , 0x83); //0x87 0319 punk 85->83
 	GC2035_write_cmos_sensor(0xfe , 0x00);
 	GC2035_write_cmos_sensor(0x82 , 0x00);
 	GC2035_write_cmos_sensor(0xb3 , 0x60);
 	GC2035_write_cmos_sensor(0xb4 , 0x40);
 	GC2035_write_cmos_sensor(0xb5 , 0x60);
-	GC2035_write_cmos_sensor(0x03 , 0x02);
-	GC2035_write_cmos_sensor(0x04 , 0x80);
+	GC2035_write_cmos_sensor(0x03 , 0x01);
+	GC2035_write_cmos_sensor(0x04 , 0xac);
 
 	//////////measure window  ///////////
 	GC2035_write_cmos_sensor(0xfe , 0x00);
@@ -478,7 +478,7 @@ static void GC2035_Sensor_Init(void)
 	GC2035_write_cmos_sensor(0x21 , 0x0f); //
 	GC2035_write_cmos_sensor(0x22 , 0xf0); //
 	GC2035_write_cmos_sensor(0x23 , 0xc3); //
-	GC2035_write_cmos_sensor(0x24 , 0x17); //0x1d
+	GC2035_write_cmos_sensor(0x24 , 0x1f); //0x1d//17
 // abs
 
 	//=====aec
@@ -492,22 +492,23 @@ static void GC2035_Sensor_Init(void)
 	GC2035_write_cmos_sensor(0x13 , 0x75);//y_target
 	GC2035_write_cmos_sensor(0xfe , 0x00);
 
+		GC2035_write_cmos_sensor(0x05,0x01);//hb
+		GC2035_write_cmos_sensor(0x06,0x67);
+		GC2035_write_cmos_sensor(0x07,0x00);//vb
+		GC2035_write_cmos_sensor(0x08,0x50);
+		GC2035_SET_PAGE1;
+		GC2035_write_cmos_sensor(0x27,0x00);//step
+		GC2035_write_cmos_sensor(0x28,0x6b);
+		GC2035_write_cmos_sensor(0x29,0x02);//level1
+		GC2035_write_cmos_sensor(0x2a,0x82);
+		GC2035_write_cmos_sensor(0x2b,0x02);//level2
+		GC2035_write_cmos_sensor(0x2c,0x82);
+		GC2035_write_cmos_sensor(0x2d,0x05);//6e8//level3  08
+		GC2035_write_cmos_sensor(0x2e,0x6f);//a2
+		GC2035_write_cmos_sensor(0x2f,0x0a);//level4
+		GC2035_write_cmos_sensor(0x30,0x08);
+	
 
-	GC2035_write_cmos_sensor(0x05 , 0x01);//hb
-	GC2035_write_cmos_sensor(0x06 , 0x11);
-	GC2035_write_cmos_sensor(0x07 , 0x00);//vb
-	GC2035_write_cmos_sensor(0x08 , 0x50);
-	GC2035_write_cmos_sensor(0xfe , 0x01);
-	GC2035_write_cmos_sensor(0x27 , 0x00);//step
-	GC2035_write_cmos_sensor(0x28 , 0xa0);
-	GC2035_write_cmos_sensor(0x29 , 0x05);//level1
-	GC2035_write_cmos_sensor(0x2a , 0x00);
-	GC2035_write_cmos_sensor(0x2b , 0x05);//level2
-	GC2035_write_cmos_sensor(0x2c , 0x00);
-	GC2035_write_cmos_sensor(0x2d , 0x06);//6e8//level3
-	GC2035_write_cmos_sensor(0x2e , 0xe0);
-	GC2035_write_cmos_sensor(0x2f , 0x0a);//level4
-	GC2035_write_cmos_sensor(0x30 , 0x00);
 	GC2035_write_cmos_sensor(0xfe , 0x00);
 	GC2035_write_cmos_sensor(0xfe , 0x00);  //0x , 0x , 0x , 0x , 0x 
 	GC2035_write_cmos_sensor(0xb6 , 0x03); //AEC enable
@@ -1378,7 +1379,8 @@ static void GC2035_Sensor_SVGA(void)
 	SENSORDB("GC2035_Sensor_SVGA");
        ////////sabsumple  800X600//////
 	GC2035_write_cmos_sensor(0xfe,0x00);	
-	GC2035_write_cmos_sensor(0xf7,0x15);
+	GC2035_write_cmos_sensor(0xfa,0x00);
+	//GC2035_write_cmos_sensor(0xf7,0x15);
 	GC2035_write_cmos_sensor(0xc8,0x00);
 
 	GC2035_write_cmos_sensor(0x99,0x22);
@@ -1407,7 +1409,8 @@ static void GC2035_Sensor_2M(void)
 
   	 ////////sabsumple  1600X1200//////
 	GC2035_write_cmos_sensor(0xfe,0x00);	
-	GC2035_write_cmos_sensor(0xf7,0x17);
+	//punk GC2035_write_cmos_sensor(0xf7,0x17);
+	GC2035_write_cmos_sensor(0xfa,0x11);
 	GC2035_write_cmos_sensor(0xc8,0x00);
 
 	GC2035_write_cmos_sensor(0x99,0x11);
@@ -1715,7 +1718,7 @@ UINT32 GC2035GetInfo(MSDK_SCENARIO_ID_ENUM ScenarioId,
 		case MSDK_SCENARIO_ID_CAMERA_PREVIEW:
 		case MSDK_SCENARIO_ID_VIDEO_PREVIEW:
 		//case MSDK_SCENARIO_ID_VIDEO_CAPTURE_MPEG4:
-			pSensorInfo->SensorClockFreq=24;
+			pSensorInfo->SensorClockFreq=26;
 			pSensorInfo->SensorClockDividCount=3;
 			pSensorInfo->SensorClockRisingCount= 0;
 			pSensorInfo->SensorClockFallingCount= 2;
@@ -1727,7 +1730,7 @@ UINT32 GC2035GetInfo(MSDK_SCENARIO_ID_ENUM ScenarioId,
 		break;
 		case MSDK_SCENARIO_ID_CAMERA_CAPTURE_JPEG:
 		//case MSDK_SCENARIO_ID_CAMERA_CAPTURE_MEM:
-			pSensorInfo->SensorClockFreq=24;
+			pSensorInfo->SensorClockFreq=26;
 			pSensorInfo->SensorClockDividCount=3;
 			pSensorInfo->SensorClockRisingCount= 0;
 			pSensorInfo->SensorClockFallingCount= 2;
@@ -1737,7 +1740,7 @@ UINT32 GC2035GetInfo(MSDK_SCENARIO_ID_ENUM ScenarioId,
                      pSensorInfo->SensorGrabStartY = 2;			
 		break;
 		default:
-			pSensorInfo->SensorClockFreq=24;
+			pSensorInfo->SensorClockFreq=26;
 			pSensorInfo->SensorClockDividCount=3;
 			pSensorInfo->SensorClockRisingCount=0;
 			pSensorInfo->SensorClockFallingCount=2;
@@ -1883,24 +1886,24 @@ BOOL GC2035_set_param_banding(UINT16 para)
 		GC2035_write_cmos_sensor(0x2b,0x06);//level2
 		GC2035_write_cmos_sensor(0x2c,0xe8);
 		GC2035_write_cmos_sensor(0x2d,0x06);//6e8//level3  08
-		GC2035_write_cmos_sensor(0x2e,0xe8);//a2
+		GC2035_write_cmos_sensor(0x2e,0xe8);//a2 
 		GC2035_write_cmos_sensor(0x2f,0x10);//level4
 		GC2035_write_cmos_sensor(0x30,0x67);*/
 		GC2035_write_cmos_sensor(0x05,0x01);//hb
-		GC2035_write_cmos_sensor(0x06,0x11);
+		GC2035_write_cmos_sensor(0x06,0x67);
 		GC2035_write_cmos_sensor(0x07,0x00);//vb
 		GC2035_write_cmos_sensor(0x08,0x50);
 		GC2035_SET_PAGE1;
 		GC2035_write_cmos_sensor(0x27,0x00);//step
-		GC2035_write_cmos_sensor(0x28,0xa0);
-		GC2035_write_cmos_sensor(0x29,0x05);//level1
-		GC2035_write_cmos_sensor(0x2a,0x00);
-		GC2035_write_cmos_sensor(0x2b,0x05);//level2
-		GC2035_write_cmos_sensor(0x2c,0xa0);
-		GC2035_write_cmos_sensor(0x2d,0x06);//6e8//level3  08
-		GC2035_write_cmos_sensor(0x2e,0xe0);//a2
+		GC2035_write_cmos_sensor(0x28,0x6b);
+		GC2035_write_cmos_sensor(0x29,0x02);//level1
+		GC2035_write_cmos_sensor(0x2a,0x82);
+		GC2035_write_cmos_sensor(0x2b,0x02);//level2
+		GC2035_write_cmos_sensor(0x2c,0x82);
+		GC2035_write_cmos_sensor(0x2d,0x05);//6e8//level3  08
+		GC2035_write_cmos_sensor(0x2e,0x6f);//a2
 		GC2035_write_cmos_sensor(0x2f,0x0a);//level4
-		GC2035_write_cmos_sensor(0x30,0x00);
+		GC2035_write_cmos_sensor(0x30,0x08);
 		GC2035_SET_PAGE0;
             break;
 
@@ -1921,20 +1924,20 @@ BOOL GC2035_set_param_banding(UINT16 para)
 		GC2035_write_cmos_sensor(0x2f,0x10);//level4
 		GC2035_write_cmos_sensor(0x30,0x43);*/
 		GC2035_write_cmos_sensor(0x05,0x01);//hb
-		GC2035_write_cmos_sensor(0x06,0x25);
+		GC2035_write_cmos_sensor(0x06,0x77);
 		GC2035_write_cmos_sensor(0x07,0x00);//vb
-		GC2035_write_cmos_sensor(0x08,0x6e);
+		GC2035_write_cmos_sensor(0x08,0x50);
 		GC2035_SET_PAGE1;
 		GC2035_write_cmos_sensor(0x27,0x00);//step
-		GC2035_write_cmos_sensor(0x28,0x83);
-		GC2035_write_cmos_sensor(0x29,0x05);//level1
-		GC2035_write_cmos_sensor(0x2a,0x1e);
-		GC2035_write_cmos_sensor(0x2b,0x06);//level2
-		GC2035_write_cmos_sensor(0x2c,0x24);
-		GC2035_write_cmos_sensor(0x2d,0x06);//level3
-		GC2035_write_cmos_sensor(0x2e,0xa7);
+		GC2035_write_cmos_sensor(0x28,0x58);
+		GC2035_write_cmos_sensor(0x29,0x02);//level1
+		GC2035_write_cmos_sensor(0x2a,0x10);
+		GC2035_write_cmos_sensor(0x2b,0x02);//level2
+		GC2035_write_cmos_sensor(0x2c,0x10);
+		GC2035_write_cmos_sensor(0x2d,0x02);//level3
+		GC2035_write_cmos_sensor(0x2e,0x10);
 		GC2035_write_cmos_sensor(0x2f,0x09);//level4
-		GC2035_write_cmos_sensor(0x30,0xb9);
+		GC2035_write_cmos_sensor(0x30,0xa0);
 		GC2035_SET_PAGE0;
             break;
 

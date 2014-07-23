@@ -62,6 +62,7 @@ extern struct platform_device *gpsPVRLDMDev;
 
 extern unsigned int mt_gpufreq_cur_freq(void);
 extern int g_pmic_cid;
+extern void MtkSetKeepFreq(void);
 
 
 static PVRSRV_ERROR PowerLockWrap(SYS_SPECIFIC_DATA *psSysSpecData, IMG_BOOL bTryLock)
@@ -162,6 +163,26 @@ PVRSRV_ERROR EnableSGXClocks(SYS_DATA *psSysData)
 		}
 	}
 #endif
+	// MTK, check flag.
+    {
+        int count = 0;
+        int state = 0;
+        do
+        {
+            state = readl((void*)(0xf0006214)) & 0x1F;
+
+            if (state != 0x12)
+            {
+                count ++;
+                PVR_DPF((PVR_DBG_ERROR, "readl((void*)(0xf0006214)) & 0x1F = %d, try=%d", state, count));
+            }
+        }
+        while( state != 0x12 && count < 3 );
+    }
+
+    MtkSetKeepFreq();
+
+    OSWaitus(10);
 
     if(( g_pmic_cid != 0) && (get_gpu_power_src()==0))
     {
@@ -175,28 +196,32 @@ PVRSRV_ERROR EnableSGXClocks(SYS_DATA *psSysData)
     enable_clock(MT_CG_MFG_AXI, "MFG");
 
     //MFGReset
-    {
-        IMG_UINT32 val;
-        DRV_WriteReg32(0xF0001200, DRV_Reg32(0xF0001200)&~0x400);// disable MFG way_en
-        val = DRV_Reg32(SPM_MFG_PWR_CON);
-        val = (val & ~0x1) | 0x10;
-        DRV_WriteReg32(SPM_MFG_PWR_CON, val);// disable MFG clock and assert MFG reset
-        DRV_WriteReg32(SPM_MFG_PWR_CON, DRV_Reg32(SPM_MFG_PWR_CON) | 0x00000002);// enable MFG ISO
-        OSWaitus(1);
-        DRV_WriteReg32(SPM_MFG_PWR_CON, DRV_Reg32(SPM_MFG_PWR_CON) & 0xFFFFFFFD);// disable MFG ISO
-        DRV_WriteReg32(SPM_MFG_PWR_CON, DRV_Reg32(SPM_MFG_PWR_CON) & 0xFFFFFFEF);// enable MFG clock
-        DRV_WriteReg32(SPM_MFG_PWR_CON, DRV_Reg32(SPM_MFG_PWR_CON) | 0x00000001);// dis-assert MFG reset
-        OSWaitus(1);
-        DRV_WriteReg32(0xF020600C, 0x1);// reset SGX544
-        DRV_WriteReg32(0xF0206008, 0xf);// MFG clock on
-        OSWaitus(1);
-        DRV_WriteReg32(0xF0206004, 0xf);// MFG clock off
-        OSWaitus(1);
-        DRV_WriteReg32(0xF020600C, 0x0);// dis-assert reset SGX544
-        DRV_WriteReg32(0xF0206008, 0xf);// MFG clock on
-        OSWaitus(1);
+    //{
+        //IMG_UINT32 val;
+        //DRV_WriteReg32(0xF0001200, DRV_Reg32(0xF0001200)&~0x400);// disable MFG way_en
+        //val = DRV_Reg32(SPM_MFG_PWR_CON);
+        //val = (val & ~0x1) | 0x10;
+        //DRV_WriteReg32(SPM_MFG_PWR_CON, val);// disable MFG clock and assert MFG reset
+        //DRV_WriteReg32(SPM_MFG_PWR_CON, DRV_Reg32(SPM_MFG_PWR_CON) | 0x00000002);// enable MFG ISO
+        //OSWaitus(1);
+        //DRV_WriteReg32(SPM_MFG_PWR_CON, DRV_Reg32(SPM_MFG_PWR_CON) & 0xFFFFFFFD);// disable MFG ISO
+        //DRV_WriteReg32(SPM_MFG_PWR_CON, DRV_Reg32(SPM_MFG_PWR_CON) & 0xFFFFFFEF);// enable MFG clock
+        //DRV_WriteReg32(SPM_MFG_PWR_CON, DRV_Reg32(SPM_MFG_PWR_CON) | 0x00000001);// dis-assert MFG reset
+        //OSWaitus(1);
+        //DRV_WriteReg32(0xF020600C, 0x1);// reset SGX544
+        //DRV_WriteReg32(0xF0206008, 0xf);// MFG clock on
+        //OSWaitus(1);
+        //DRV_WriteReg32(0xF0206004, 0xf);// MFG clock off
+        //OSWaitus(1);
+        //DRV_WriteReg32(0xF020600C, 0x0);// dis-assert reset SGX544
+        //DRV_WriteReg32(0xF0206008, 0xf);// MFG clock on
+        //OSWaitus(1);
+        //DRV_WriteReg32(0xF0001200, (DRV_Reg32(0xF0001200)& ~0x400)| 0x400);// enable MFG way_en
+    //}
+
+    OSWaitus(5);
         DRV_WriteReg32(0xF0001200, (DRV_Reg32(0xF0001200)& ~0x400)| 0x400);// enable MFG way_en
-    }
+     
 
     mt_gpufreq_gpu_clock_ratio(GPU_DVFS_CLOCK_RATIO_ON);
 
@@ -237,6 +262,8 @@ IMG_VOID DisableSGXClocks(SYS_DATA *psSysData)
 #endif
 
     mt_gpufreq_gpu_clock_ratio(GPU_DVFS_CLOCK_RATIO_OFF);
+
+    DRV_WriteReg32(0xF0001200, DRV_Reg32(0xF0001200)&~0x400);// disable MFG way_en
 
     disable_clock(MT_CG_MFG_AXI, "MFG");
     disable_clock(MT_CG_MFG_MEM, "MFG");

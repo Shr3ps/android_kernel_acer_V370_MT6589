@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--  Copyright (C) 2007 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +14,14 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="no_sip_account_found">لا توجد حسابات اتصال بالإنترنت على هذا الجهاز، إضافة حساب الآن؟</string>  
-    <string name="ota_progress">يُرجى الانتظار حتى يتم برمجة الجهاز.</string>  
-    <string name="ota_skip_activation_dialog_message">في حالة الخروج من التنشيط، سيتعذر إجراء مكالمات أو الاتصال بشبكات بيانات الهواتف المحمولة (لذا يمكنك الاتصال بشبكات Wi-Fi). سيُطلب منك تنشيط الجهاز في أي وقت تقوم بتشغيله إلى أن تتمكن من تنشيط الجهاز خاصتك.</string>  
-    <string name="ota_successful">تم تنشيط الجهاز حاليًا. قد تستغرق مدة بدء الخدمة حوالي 15 دقيقة.</string>  
-    <string name="ota_title_activate">تنشيط الجهاز</string>  
-    <string name="ota_title_activate_success">تم تنشيط الجهاز!</string>  
-    <string name="ota_touch_activate">يجب إجراء مكالمة خاصة لتنشيط خدمة الجهاز. \n\nبعد الضغط على \u201Cتنشيط\u201D, اتبع التعليمات الواردة لتنشيط الجهاز.</string>  
-    <string name="ota_unsuccessful">لم يتم تنشيط الجهاز، \nقد تضطر إلى البحث عن مكان به تغطية جيدة (بالقرب من نافذة أو بالخارج). \n\nحاول مرة أخرى أو اتصل بخدمة العملاء للحصول على مزيد من الخيارات.</string>  
-    <string name="puk_unlocked">تم إلغاء قفل بطاقة SIM. جارٍ إلغاء قفل الجهاز\u2026</string>  
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">  
+    <string name="no_sip_account_found">"لا توجد حسابات اتصال بالإنترنت على هذا الجهاز، إضافة حساب الآن؟"</string>  
+    <string name="ota_progress">"يُرجى الانتظار ريثما يتم برمجة الجهاز."</string>  
+    <string name="ota_skip_activation_dialog_message">"في حال تخطي وتجاوز عملية التفعيل، سيتعذر إجراء مكالمات أو الاتصال بشبكات بيانات الهاتف المحمول (لذا يمكنك الاتصال بشبكات Wi-Fi). سيُطلب منك تفعيل الجهاز في كل مرة تقوم بتشغيله إلى أن تتمكن من تفعيل جهازك الخاص هذا."</string>  
+    <string name="ota_successful">"تم تفعيل الجهاز حالياً. قد تستغرق مدة بدء الخدمة حوالي 15 دقيقة."</string>  
+    <string name="ota_title_activate">"تفعيل الجهاز"</string>  
+    <string name="ota_title_activate_success">"تم تفعيل الجهاز!"</string>  
+    <string name="ota_touch_activate">"يجب إجراء مكالمة خاصة لتفعيل خدمة الجهاز. \n\nبعد الضغط على \u201Cتفعيل\u201D، اتبع التعليمات الواردة لتفعيل الجهاز."</string>  
+    <string name="ota_unsuccessful">"لم يتم تفعيل الجهاز، \nقد تضطر إلى البحث عن مكان به تغطية جيدة (بالقرب من نافذة أو بالخارج). \n\nحاول مرة أخرى أو اتصل بخدمة العملاء للحصول على مزيد من الخيارات."</string>  
+    <string name="puk_unlocked">"تم إلغاء قفل الشريحة SIM. جارٍ إلغاء قفل الجهاز\u2026"</string> 
 </resources>

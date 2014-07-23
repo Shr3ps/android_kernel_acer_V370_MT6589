@@ -147,6 +147,8 @@
 #define SENSORDB(x,...)
 #endif
 
+#define S5K8AAYX_TEST_PATTERN_CHECKSUM (0x7d732767)
+
 typedef struct
 {
   UINT16  iSensorVersion;
@@ -6831,9 +6833,9 @@ void S5K8AAYX_MIPI_PV_Mode(void)
 	S5K8AAYX_MIPI_write_cmos_sensor(0x1000,0x0001);
 	mdelay(200);
 
-	S5K8AAYX_MIPI_write_cmos_sensor(0x0028, 0x7000);
-	S5K8AAYX_MIPI_write_cmos_sensor(0x002a, 0x019A);	
-	S5K8AAYX_MIPI_write_cmos_sensor(0x0F12, 0x0100); //EV 0
+	//S5K8AAYX_MIPI_write_cmos_sensor(0x0028, 0x7000);
+	//S5K8AAYX_MIPI_write_cmos_sensor(0x002a, 0x019A);	
+	//S5K8AAYX_MIPI_write_cmos_sensor(0x0F12, 0x0100); //EV 0
 	SENSORDB("PV set ed\n");
 }
 
@@ -7962,6 +7964,61 @@ UINT32 S5K8AAYXMIPIGetDefaultFramerateByScenario(MSDK_SCENARIO_ID_ENUM scenarioI
 	return ERROR_NONE;
 }
 
+UINT32 S5K8AAYXSetTestPatternMode(kal_bool bEnable)
+{
+    SENSORDB("[S5K8AAYXSetTestPatternMode] Test pattern enable:%d\n", bEnable);
+
+	if(bEnable) 
+	{
+        //fix AE/AWB output setting
+        S5K8AAYX_MIPI_write_cmos_sensor(0xFCFC,0xD000);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x3700,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x3E00,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x4300,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x4400,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x4500,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x4600,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x4700,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x6000,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x6100,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x6330,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x6400,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x6500,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x6700,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x6800,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x6A00,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x6B00,0x0001);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x4100,0x0001);
+        
+        //Output test pattern mode setting
+        //0x0002 - solid color
+        S5K8AAYX_MIPI_write_cmos_sensor(0x3602,0x1F40);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x3604,0x1A40);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x3606,0x1A40);
+        S5K8AAYX_MIPI_write_cmos_sensor(0x3608,0x1040);
+        //0x0004 - gradient
+        S5K8AAYX_MIPI_write_cmos_sensor(0x360a,0x0383);
+        //Address: D0003600
+        //0x0000 -- bypass
+        //0x0002 - solid color
+        //0x0004 - gradient
+        //0x0006 - address dependent noise
+        //0x0008 - random
+        //0x000A - gradient + address dependent noise
+        //0x000C - gradient + random
+        //0x000E - out pixel attributes
+        S5K8AAYX_MIPI_write_cmos_sensor(0x3600,0x0004);
+
+        mdelay(100);
+
+	}
+	else        
+	{
+		S5K8AAYX_MIPI_write_cmos_sensor(0x3600,0x0000);	
+	}
+    return ERROR_NONE;
+}
+
 UINT32 S5K8AAYX_MIPIFeatureControl(MSDK_SENSOR_FEATURE_ENUM FeatureId,
 							 UINT8 *pFeaturePara,UINT32 *pFeatureParaLen)
 {
@@ -8097,6 +8154,14 @@ UINT32 S5K8AAYX_MIPIFeatureControl(MSDK_SENSOR_FEATURE_ENUM FeatureId,
 		case SENSOR_FEATURE_GET_AE_AWB_LOCK_INFO:
 			S5K8AAYX_MIPIGetAEAWBLock((*pFeatureData32),*(pFeatureData32+1));
 			break;
+        case SENSOR_FEATURE_SET_TEST_PATTERN://for factory mode auto testing    
+            S5K8AAYXSetTestPatternMode((BOOL)*pFeatureData16);
+            break;
+        case SENSOR_FEATURE_GET_TEST_PATTERN_CHECKSUM_VALUE://for factory mode auto testing             
+            *pFeatureReturnPara32= S5K8AAYX_TEST_PATTERN_CHECKSUM;           
+            *pFeatureParaLen=4;                             
+            break;
+
 		default:
 			break;			
 	}

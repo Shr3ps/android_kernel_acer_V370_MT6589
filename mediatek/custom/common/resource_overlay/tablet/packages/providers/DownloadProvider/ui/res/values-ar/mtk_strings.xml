@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +14,6 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="oma_download_content_not_supported">هذا المحتوى غير مدعوم في الجهاز. لم يتم العثور على تطبيق لفتح هذا الملف، هل ما زلت ترغب في تنزيله؟</string>  
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">  
+    <string name="oma_download_content_not_supported">"هذا المحتوى غير معتمد من قبل الجهاز. لم يتم العثور على تطبيق لفتح هذا الملف، أما زلت ترغب في تنزيله؟"</string> 
 </resources>

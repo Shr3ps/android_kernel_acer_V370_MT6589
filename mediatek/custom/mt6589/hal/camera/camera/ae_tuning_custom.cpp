@@ -221,19 +221,19 @@ getAEParam()
         1160,  // EV   0.3
         1261,  // EV   0.5
         1370,  // EV   0.7
-        1800, //1552,  // EV   1.0
+        1700, //1552,  // EV   1.0
         1758,  // EV   1.3
         1911,  // EV   1.5
         2077,  // EV   1.7
         2750, //2353,  // EV   2.0
         2896,  // EV   2.5
-        5000, //3566,  // EV   3.0
+        5200, //3566,  // EV   3.0
         4390,  // EV   3.5
         5405,  // EV   4.0
          904,  // EV -0.3
          832,  // EV -0.5
          765,  // EV -0.7
-         685, //748,  // EV -1.0
+         650, //748,  // EV -1.0
          596,  // EV -1.3
          549,  // EV -1.5
          505,  // EV -1.7
@@ -243,7 +243,6 @@ getAEParam()
          239,  // EV -3.5
          194,  // EV -4.0
     };
-
 
     // total 24 sets
     static strAEMOVE  g_AEMoveTable[] =
@@ -362,6 +361,14 @@ getAEParam()
           1,     // iGAIN_DIFFERENCE_LIMITER
     };
 
+    // for video dynamic frame rate
+    static VdoDynamicFrameRate_T g_VdoDynamicFpsTable = 
+    {
+       TRUE, // isEnableDFps
+       50,  // EVThresNormal
+       50,  // EVThresNight
+    };
+    
     static AE_PARAM_T strAEInitPara =
     {
         g_AEParasetting,
@@ -380,6 +387,7 @@ getAEParam()
         g_AEVideoMoveTable,
         g_AEFaceMoveTable,
         g_AELimiterDataTable,
+        g_VdoDynamicFpsTable,
     };
 
     return strAEInitPara;

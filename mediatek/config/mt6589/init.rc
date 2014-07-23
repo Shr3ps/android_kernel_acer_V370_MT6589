@@ -433,7 +433,7 @@ on post-fs-data
     # Sensor
     chmod 0660 /dev/hwmsensor
     chmod 0660 /dev/msensor
-    chmod 0660 /dev/gsensor
+    chmod 0666 /dev/gsensor
     chmod 0660 /dev/als_ps
     chmod 0666 /dev/als_ps
     chmod 0660 /dev/gyroscope
@@ -472,7 +472,13 @@ on post-fs-data
     
     mkdir /data/amit/ 0770 system system
     mkdir /data/misc/sensors 0664 system system
-    mkdir /data/misc/akmd 0664 system system
+    mkdir /data/misc/akmd 0774 system system
+    mkdir /data/misc/s62x 0771 compass compass
+
+    mkdir /data/misc/acdapi/ 0770 system system
+    chmod 0666 /data/misc/acdapi/calib.dat
+    chmod 0666 /data/misc/acdapi/param.dat
+    chmod 0666 /data/misc/acdapi/sensors.dat
     chown system /sys/class/input/input5/enable
     chown system /sys/class/input/input5/delay
     chown system /sys/class/input/input5/wake
@@ -483,6 +489,8 @@ on post-fs-data
     chown system /sys/devices/platform/msensor/driver/cpsopmode
     chown system /sys/devices/platform/msensor/driver/cpsreptxy
     chown system /sys/devices/platform/msensor/driver/cpsreptz
+    # MC6420
+    mkdir /data/data/mcube 0664 system system
 
     # GPIO
     chmod 0664 /dev/mtgpio
@@ -546,7 +554,11 @@ on post-fs-data
     mknod /dev/devmap c 196 0;
     chmod 0444 /dev/devmap
     chown root media /dev/devmap
-    
+
+    # BT relayer mode used VCOM
+    chown bluetooth radio /dev/ttyGS2
+    chmod 0660 /dev/ttyGS2
+
     # bluetooth
     mkdir /data/@btmtk 0770 bluetooth net_bt
     chown bluetooth bluetooth /dev/hid-keyboard
@@ -690,6 +702,8 @@ on boot
     chown system system /sys/devices/system/cpu/cpufreq/interactive/boostpulse
     chown system system /sys/devices/system/cpu/cpufreq/interactive/input_boost
     chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/input_boost
+    chown system system /sys/devices/system/cpu/cpufreq/hotplug/cpu_num_base
+    chmod 0660 /sys/devices/system/cpu/cpufreq/hotplug/cpu_num_base
 
     # Assume SMP uses shared cpufreq policy for all CPUs
     chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
@@ -746,6 +760,9 @@ on boot
 
 # AGPS
     mkdir /data/agps_supl 0771 gps system
+
+# NFC
+    mkdir /data/nfc_socket 0771 nfc radio
 
 ## Thermal
   #change permissions on thermal devices
@@ -1033,12 +1050,12 @@ service ap_daemon /system/bin/wpa_supplicant \
 # MT6620 related services (End)
 #
 
-service dhcpcd_wlan0 /system/bin/logwrapper /system/bin/dhcpcd -A -BK -dd
+service dhcpcd_wlan0 /system/bin/logwrapper /system/bin/dhcpcd -BK -dd
     class main
     disabled
     oneshot
 
-service dhcpcd_p2p /system/bin/logwrapper /system/bin/dhcpcd -A -BK -dd
+service dhcpcd_p2p /system/bin/logwrapper /system/bin/dhcpcd -BK -dd
     class main
     disabled
     oneshot
@@ -1210,7 +1227,7 @@ service agpsd /system/bin/mtk_agpsd
 
 service mnld /system/xbin/mnld
     user gps
-    group nvram gps inet misc sdcard_rw
+    group nvram gps inet misc sdcard_rw system
     socket mnld stream 660 gps system
     disabled
 
@@ -1250,6 +1267,11 @@ service dualmdlogger /system/bin/dualmdlogger
 
 service msensord /system/bin/msensord
     oneshot
+
+service s62xd /system/bin/s62xd
+    disabled
+    user compass
+    group system
     
 service ami304d /system/bin/logwrapper /system/bin/ami304d
     user system
@@ -1262,7 +1284,20 @@ service memsicd /system/bin/memsicd
      oneshot
     user system
     group system
-    
+
+service memsicd3416x /system/bin/memsicd3416x
+     disabled
+     oneshot
+	 user system
+    group system
+
+
+service qmc5983d /system/bin/qmc5983d
+     disabled
+     oneshot
+    user system
+    group system
+ 
 service akmd8975 /system/bin/akmd8975
     disabled
     user system
@@ -1273,6 +1308,17 @@ service akmd8963 /system/bin/akmd8963
     user system
     group system
 
+service akmd09911 /system/bin/akmd09911
+    disabled
+    user system
+    group system
+
+service AcdApiDaemon /system/bin/AcdApiDaemon
+    disabled
+    oneshot
+    user system
+    group system
+    
 # senodiad(st480)
 service senodiad /system/bin/senodiad
     class main
@@ -1284,7 +1330,12 @@ service bmm050d /system/bin/bmm050d
     disabled
     user system
     group system
-    
+
+service mc6420d /system/bin/mc6420d
+    disabled
+    user system
+    group system
+
 service orientationd /system/bin/orientationd
     disabled
     user system
