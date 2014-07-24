@@ -88,6 +88,68 @@ config CPU_FREQ_DEFAULT_GOV_ONDEMAND
 	  governor. If unsure have a look at the help section of the
 	  driver. Fallback governor will be the performance governor.
 
+config CPU_FREQ_DEFAULT_GOV_PEGASUSQ
+	bool "pegasusq"
+	select CPU_FREQ_GOV_PEGASUSQ
+
+config CPU_FREQ_DEFAULT_GOV_NIGHTMARE
+        bool "nightmare"
+        select CPU_FREQ_GOV_NIGHTMARE
+
+config CPU_FREQ_DEFAULT_GOV_SAKURACTIVE
+	bool "sakuractive"
+	select CPU_FREQ_GOV_SAKURACTIVE
+	select CPU_FREQ_GOV_PERFORMANCE
+	help
+	  Use the CPUFreq governor 'sakuractive' as default. This allows you
+	  to get a full dynamic frequency capable system with CPU
+	  hotplug support by simply loading your cpufreq low-level
+	  hardware driver. Be aware that not all cpufreq drivers
+	  support the hotplug governor. If unsure have a look at
+	  the help section of the driver. Fallback governor will be the
+	  performance governor.
+
+config CPU_FREQ_DEFAULT_GOV_SMARTASSH3
+	bool "smartassH3"
+	select CPU_FREQ_GOV_SMARTASSH3
+	help
+	Use the CPUFreq governor 'SmartassH3' as default.
+
+config CPU_FREQ_DEFAULT_GOV_SMARTASS2
+	bool "smartass2"
+	select CPU_FREQ_GOV_SMARTASS2
+	help
+	  Use the CPUFreq governor 'smartassV2' as default.
+
+config CPU_FREQ_DEFAULT_GOV_CONSERVATIVEX
+        bool "conservativex"
+        select CPU_FREQ_GOV_CONSERVATIVEX
+        help
+         Use the CPUFreq governor 'conservativex' as default
+
+config CPU_FREQ_DEFAULT_GOV_INTERACTIVEX
+        bool "interactiveX"
+        select CPU_FREQ_GOV_INTERACTIVEX
+        help
+         Use the CPUFreq governor 'interactiveX' as default. This allows
+         you to get a full dynamic cpu frequency capable system by simply
+         loading your cpufreq low-level hardware driver, using the
+         'interactiveX' governor for latency-sensitive workloads.
+
+config CPU_FREQ_DEFAULT_GOV_ONDEMANDX
+	bool "ondemandX"
+	select CPU_FREQ_GOV_ONDEMANDX
+	select CPU_FREQ_GOV_PERFORMANCE
+	help
+	  Use the CPUFreq governor 'ondemand' as default. This allows
+	  you to get a full dynamic frequency capable system by simply
+	  loading your cpufreq low-level hardware driver.
+	  Be aware that not all cpufreq drivers support the ondemand
+	  governor. If unsure have a look at the help section of the
+	  driver. Fallback governor will be the performance governor.
+	  OndemandX has built in sleep profile, but not working Sysfs
+	  interfacee
+
 config CPU_FREQ_DEFAULT_GOV_HYBRID
 	bool "hybrid"
 	select CPU_FREQ_GOV_HYBRID
@@ -190,6 +252,9 @@ config CPU_FREQ_GOV_ONDEMAND
 
 	  If in doubt, say N.
 
+config CPU_FREQ_GOV_PEGASUSQ
+	tristate "'pegasusq' cpufreq policy governor"
+
 config CPU_FREQ_GOV_HYBRID
 	tristate "'hybrid' cpufreq policy governor"
 	select CPU_FREQ_TABLE
@@ -205,6 +270,51 @@ config CPU_FREQ_GOV_HYBRID
 	  module will be called cpufreq_hybrid.
 
 	  For details, take a look at linux/Documentation/cpu-freq.
+
+	  If in doubt, say N.
+
+config CPU_FREQ_GOV_SMARTASS2
+	tristate "'smartassV2' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	  'smartassV2' - a "smart" governor
+
+config CPU_FREQ_GOV_SAKURACTIVE
+	tristate "'sakuractive' cpufreq governor"
+	depends on CPU_FREQ && NO_HZ && HOTPLUG_CPU
+	help
+	  'sakuractive' - this driver mimics the frequency scaling behavior
+	  in 'ondemand', but with several key differences. First is
+	  that frequency transitions use the CPUFreq table directly,
+	  instead of incrementing in a percentage of the maximum
+	  available frequency. Second 'sakuractive' will offline auxillary
+	  CPUs when the system is idle, and online those CPUs once the
+	  system becomes busy again. This last feature is needed for
+	  architectures which transition to low power states when only
+	  the "master" CPU is online, or for thermally constrained
+	  devices.
+	  If you don't have one of these architectures or devices, use
+	  'ondemand' instead.
+
+	  If in doubt, say N.
+
+config CPU_FREQ_GOV_CONSERVATIVEX
+        tristate "'conservativex' cpufreq governor"
+        depends on CPU_FREQ
+        help
+         'conservativex' - less aggressive version of conservative.
+
+config CPU_FREQ_GOV_INTERACTIVEX
+        tristate "'interactiveX' cpufreq policy governor"
+        help
+         'interactiveX' - Modified version of interactive with sleep+wake code
+
+config CPU_FREQ_GOV_ONDEMANDAX
+	tristate "'ondemandAX' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	  'ondemandAX' - more info https://raw.github.com/AnDyXX/Xperia-devices/
+	  blob/master/Xperia%20U%20Modules/OndemandAX%20governor/axperiau_ondemandax.c
 
 	  If in doubt, say N.
 
@@ -263,6 +373,17 @@ config CPU_FREQ_GOV_CONSERVATIVE
 	  module will be called cpufreq_conservative.
 
 	  For details, take a look at linux/Documentation/cpu-freq.
+
+	  If in doubt, say N.
+
+config CPU_FREQ_GOV_NIGHTMARE
+        tristate "'nightmare' cpufreq policy governor"
+
+config CPU_FREQ_GOV_SMARTASSH3
+	tristate "'SmartassH3' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	  SmartassH3 - a "smartassV2 with tweaks by H3ROS" governor!
 
 	  If in doubt, say N.
 
