@@ -1958,6 +1958,14 @@ static inline int set_cpus_allowed_ptr(struct task_struct *p,
 		return -EINVAL;
 	return 0;
 }
+#ifdef CONFIG_NO_HZ
+void calc_load_enter_idle(void);
+void calc_load_exit_idle(void);
+#else
+static inline void calc_load_enter_idle(void) { }
+static inline void calc_load_exit_idle(void) { }
+#endif /* CONFIG_NO_HZ */
+
 #endif
 
 #ifndef CONFIG_CPUMASK_OFFSTACK
@@ -2846,6 +2854,7 @@ static inline unsigned long task_rlimit_max(const struct task_struct *tsk,
 
 static inline unsigned long rlimit(unsigned int limit)
 {
+
 	return task_rlimit(current, limit);
 }
 
